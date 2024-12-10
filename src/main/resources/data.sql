@@ -1,27 +1,15 @@
--- Table for products
-CREATE TABLE product (
-    product_id INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(255) NOT NULL,
-    price DECIMAL(10, 2) NOT NULL,
-    vat_rate DECIMAL(5, 2) NOT NULL
-);
+-- Insert sample products
+INSERT INTO product (name, price, vat_rate) VALUES ('Product A', 10.00, 0.10);
+INSERT INTO product (name, price, vat_rate) VALUES ('Product B', 20.00, 0.20);
+INSERT INTO product (name, price, vat_rate) VALUES ('Product C', 15.00, 0.15);
 
--- Table for orders
-CREATE TABLE orders (
-    order_id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    order_price DECIMAL(10, 2) NOT NULL,
-    order_vat DECIMAL(10, 2) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+-- Insert a sample order
+INSERT INTO orders (order_price, order_vat) VALUES (75.00, 7.50);
 
--- Table for order items
-CREATE TABLE order_item (
-    order_item_id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    order_id BIGINT NOT NULL,
-    product_id INT NOT NULL,
-    quantity INT NOT NULL,
-    price DECIMAL(10, 2) NOT NULL,
-    vat DECIMAL(10, 2) NOT NULL,
-    FOREIGN KEY (order_id) REFERENCES orders(order_id),
-    FOREIGN KEY (product_id) REFERENCES product(product_id)
-);
+-- Insert items for the sample order
+INSERT INTO order_item (order_id, product_id, quantity, price, vat)
+VALUES (1, 1, 2, 20.00, 2.00); -- 2 units of Product A
+INSERT INTO order_item (order_id, product_id, quantity, price, vat)
+VALUES (1, 2, 1, 20.00, 4.00); -- 1 unit of Product B
+INSERT INTO order_item (order_id, product_id, quantity, price, vat)
+VALUES (1, 3, 3, 45.00, 1.50); -- 3 units of Product C
