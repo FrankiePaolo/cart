@@ -1,0 +1,13 @@
+spring:
+  profiles:
+  active: mysql
+  datasource:
+    url: jdbc:mysql://localhost:3306/pricing_api
+    username: root
+    password: password
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  cache:
+    type: simple
