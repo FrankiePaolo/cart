@@ -14,15 +14,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
-import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(MockitoExtension.class)
 class OrderServiceTest {
@@ -40,16 +37,13 @@ class OrderServiceTest {
 
     private OrderService orderService;
 
+    @Mock
+    private OrderValidationService orderValidationService;
+
     @BeforeEach
     void setUp() {
         orderService = new OrderService(productService, orderRepository,
-                orderMapper, orderItemMapper, priceCalculationService);
-    }
-
-    @Test
-    void createOrder_WithEmptyItems_ThrowsException() {
-        assertThrows(IllegalArgumentException.class,
-                () -> orderService.createOrder(Collections.emptyList()));
+                orderMapper, orderItemMapper, priceCalculationService, orderValidationService);
     }
     @Test
     void createOrder_WithMultipleItems_CalculatesTotalCorrectly() {

@@ -3,7 +3,7 @@ This project is a RESTful API implemented using Spring Boot for a Purchase Cart 
 Features
 
     Calculates the total price and VAT for orders.
-    Implements a database-backed product catalog using MySQL (or H2 for testing).
+    Implements a database-backed product catalog using MySQL (or H2 for testing), with caching for improved performance.
     Includes Docker support for containerized builds and deployment.
 
 Running the Application:
