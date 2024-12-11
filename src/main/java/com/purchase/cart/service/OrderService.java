@@ -7,7 +7,6 @@ import com.purchase.cart.mapper.OrderItemMapper;
 import com.purchase.cart.mapper.OrderMapper;
 import com.purchase.cart.model.Order;
 import com.purchase.cart.repository.OrderRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

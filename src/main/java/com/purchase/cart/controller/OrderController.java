@@ -1,12 +1,8 @@
 package com.purchase.cart.controller;
 
 import com.purchase.cart.dto.OrderDTO;
-import com.purchase.cart.dto.OrderItemDTO;
 import com.purchase.cart.dto.OrderRequestDTO;
-import com.purchase.cart.mapper.OrderMapper;
-import com.purchase.cart.model.Order;
 import com.purchase.cart.service.OrderService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
