@@ -9,6 +9,7 @@ import com.purchase.cart.model.Order;
 import com.purchase.cart.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -29,36 +30,50 @@ public class OrderService {
     @Autowired
     private OrderItemMapper orderItemMapper;
 
-    public OrderDTO createOrder(List<OrderItemDTO> itemDTOs) {
-        BigDecimal totalPrice = BigDecimal.ZERO;
-        BigDecimal totalVat = BigDecimal.ZERO;
+    @Autowired
+    private PriceCalculationService priceCalculationService;
 
+    @Transactional
+    public OrderDTO createOrder(List<OrderItemDTO> itemDTOs) {
         List<OrderItemDTO> items = new ArrayList<>();
+        List<BigDecimal> prices = new ArrayList<>();
+        List<BigDecimal> vatAmounts = new ArrayList<>();
 
         for (OrderItemDTO itemDTO : itemDTOs) {
             ProductDTO productDTO = productService.getId(itemDTO.getProductId());
+            OrderItemDTO orderItemDTO = makeOrderItem(itemDTO);
 
-            OrderItemDTO orderItemDTO = new OrderItemDTO();
-            orderItemDTO.setProductId(itemDTO.getProductId());
-            orderItemDTO.setQuantity(itemDTO.getQuantity());
-
-            BigDecimal price = productDTO.getPrice().multiply(BigDecimal.valueOf(itemDTO.getQuantity()));
-            BigDecimal vat = price.multiply(productDTO.getVatRate());
+            BigDecimal price = priceCalculationService.calculateItemPrice(itemDTO, productDTO);
+            BigDecimal vat = priceCalculationService.calculateVat(price, productDTO);
 
             orderItemDTO.setPrice(price);
             orderItemDTO.setVat(vat);
 
             items.add(orderItemDTO);
-            totalPrice = totalPrice.add(price);
-            totalVat = totalVat.add(vat);
+            prices.add(price);
+            vatAmounts.add(vat);
         }
 
+        BigDecimal totalPrice = priceCalculationService.calculateTotalPrice(prices);
+        BigDecimal totalVat = priceCalculationService.calculateTotalPrice(vatAmounts);
+
+        Order savedOrder = makeOrder(totalPrice, totalVat, items);
+        return orderMapper.toDTO(savedOrder);
+    }
+
+    private static OrderItemDTO makeOrderItem(OrderItemDTO itemDTO) {
+        OrderItemDTO orderItemDTO = new OrderItemDTO();
+        orderItemDTO.setProductId(itemDTO.getProductId());
+        orderItemDTO.setQuantity(itemDTO.getQuantity());
+        return orderItemDTO;
+    }
+
+    private Order makeOrder(BigDecimal totalPrice, BigDecimal totalVat, List<OrderItemDTO> items) {
         OrderDTO orderDTO = new OrderDTO();
         orderDTO.setOrderPrice(totalPrice);
         orderDTO.setOrderVat(totalVat);
         orderDTO.setItems(items);
 
-        Order savedOrder = orderRepository.save(orderMapper.toEntity(orderDTO));
-        return orderMapper.toDTO(savedOrder);
+        return orderRepository.save(orderMapper.toEntity(orderDTO));
     }
 }
