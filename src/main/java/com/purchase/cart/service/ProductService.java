@@ -4,7 +4,9 @@ import com.purchase.cart.model.Product;
 import com.purchase.cart.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
 
+@Service
 public class ProductService {
 
     @Autowired
