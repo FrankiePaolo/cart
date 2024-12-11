@@ -3,7 +3,6 @@ package com.purchase.cart.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.purchase.cart.dto.OrderDTO;
 import com.purchase.cart.dto.OrderItemDTO;
-import com.purchase.cart.dto.OrderItemsWrapper;
 import com.purchase.cart.mapper.OrderMapper;
 import com.purchase.cart.service.OrderService;
 import org.junit.jupiter.api.Test;
@@ -39,13 +38,6 @@ class OrderControllerTest {
     @Test
     void createOrder_WithValidRequest_ReturnsCreatedOrder() throws Exception {
         // given
-        OrderItemDTO requestItem = new OrderItemDTO();
-        requestItem.setProductId(1);
-        requestItem.setQuantity(2);
-
-        OrderItemsWrapper wrapper = new OrderItemsWrapper();
-        wrapper.setItems(List.of(requestItem));
-
         OrderDTO expectedOrder = new OrderDTO();
         expectedOrder.setOrderPrice(new BigDecimal(20));
         expectedOrder.setOrderVat(new BigDecimal(4));

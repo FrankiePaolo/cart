@@ -6,7 +6,7 @@ import java.util.List;
 
 @Data
 public class OrderRequestDTO {
-    private OrderItemsWrapper order;
+    private OrderDTO order;
 }
 
 
