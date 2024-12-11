@@ -14,7 +14,7 @@ import org.springframework.cache.annotation.Cacheable;
 public class PriceCalculationService {
     private static final int DECIMAL_PLACES = 2;
 
-    @Cacheable(value = "productPrices", key = "#productDTO.productId")
+    @Cacheable(value = "productPrices", key = "#productDTO.productId + '-' + #itemDTO.quantity")
     public BigDecimal calculateItemPrice(OrderItemDTO itemDTO, ProductDTO productDTO) {
         return productDTO.getPrice()
                 .multiply(BigDecimal.valueOf(itemDTO.getQuantity()))

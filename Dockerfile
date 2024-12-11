@@ -1,8 +1,6 @@
-# Use a lightweight JDK image
-FROM openjdk:17-jdk-slim
+# Use a lightweight JDK image that works well with ByteBuddy and Mockito
+FROM eclipse-temurin:17-jdk
 
 # Install Maven
 RUN apt-get update && apt-get install -y maven
 
-# Expose the application port
-EXPOSE 9090

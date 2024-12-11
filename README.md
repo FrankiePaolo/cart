@@ -27,3 +27,7 @@ Run each step:
 Docker's internal DNS resolves the service name "mysql" to the correct container IP address within the same Docker network. That's why we include the --network flag in our run commands:
 
     docker run -v $(pwd):/mnt -p 9090:9090 --network=$(basename $(pwd))_default -w /mnt mytest ./scripts/run.sh
+
+The application is initialized with 3 sample products with random price and vat data. You can add as many as you want in the
+
+    /src/main/resources/data.sql

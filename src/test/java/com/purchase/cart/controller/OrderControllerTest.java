@@ -3,6 +3,7 @@ package com.purchase.cart.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.purchase.cart.dto.OrderDTO;
 import com.purchase.cart.dto.OrderItemDTO;
+import com.purchase.cart.dto.OrderItemsWrapper;
 import com.purchase.cart.mapper.OrderMapper;
 import com.purchase.cart.service.OrderService;
 import org.junit.jupiter.api.Test;
@@ -38,38 +39,55 @@ class OrderControllerTest {
     @Test
     void createOrder_WithValidRequest_ReturnsCreatedOrder() throws Exception {
         // given
-        OrderItemDTO itemDTO = new OrderItemDTO();
-        itemDTO.setProductId(1);
-        itemDTO.setQuantity(2);
-        itemDTO.setPrice(new BigDecimal("10.00"));
-        itemDTO.setVat(new BigDecimal("2.00"));
+        OrderItemDTO requestItem = new OrderItemDTO();
+        requestItem.setProductId(1);
+        requestItem.setQuantity(2);
+
+        OrderItemsWrapper wrapper = new OrderItemsWrapper();
+        wrapper.setItems(List.of(requestItem));
 
         OrderDTO expectedOrder = new OrderDTO();
-        expectedOrder.setOrderPrice(new BigDecimal("20.00"));
-        expectedOrder.setOrderVat(new BigDecimal("4.00"));
-        expectedOrder.setItems(List.of(itemDTO));
+        expectedOrder.setOrderPrice(new BigDecimal(20));
+        expectedOrder.setOrderVat(new BigDecimal(4));
+        OrderItemDTO responseItem = new OrderItemDTO();
+        responseItem.setProductId(1);
+        responseItem.setQuantity(2);
+        responseItem.setPrice(new BigDecimal(20));
+        responseItem.setVat(new BigDecimal(4));
+        expectedOrder.setItems(List.of(responseItem));
 
         when(orderService.createOrder(any())).thenReturn(expectedOrder);
 
+        String requestJson = """
+                {
+                    "order": {
+                        "items": [
+                            {
+                                "product_id": 1,
+                                "quantity": 2
+                            }
+                        ]
+                    }
+                }""";
+
         // when/then
         mockMvc.perform(post("/api/orders")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(List.of(itemDTO))))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.orderPrice").value("20.00"))
-                .andExpect(jsonPath("$.orderVat").value("4.00"))
-                .andExpect(jsonPath("$.items[0].productId").value(1))
+                .andExpect(jsonPath("$.orderPrice").value(20))
+                .andExpect(jsonPath("$.orderVat").value(4))
+                .andExpect(jsonPath("$.items[0].product_id").value(1))
                 .andExpect(jsonPath("$.items[0].quantity").value(2))
                 .andExpect(jsonPath("$.items[0].price").value(20))
                 .andExpect(jsonPath("$.items[0].vat").value(4));
-
     }
 
     @Test
     void createOrder_WithEmptyRequest_ReturnsBadRequest() throws Exception {
         mockMvc.perform(post("/api/orders")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("[]"))
+                        .content("wrongData"))
                 .andExpect(status().isBadRequest());
     }
 }

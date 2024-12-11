@@ -7,6 +7,7 @@ import com.purchase.cart.mapper.OrderMapper;
 import com.purchase.cart.model.Order;
 import com.purchase.cart.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,15 +17,19 @@ import java.util.List;
 @RequestMapping("/api/orders")
 public class OrderController {
 
-    @Autowired
-    private OrderService orderService;
+    private final OrderService orderService;
 
-    @Autowired
-    private OrderMapper orderMapper;
+    public OrderController(OrderService orderService) {
+        this.orderService = orderService;
+    }
 
     @PostMapping
     public ResponseEntity<OrderDTO> createOrder(@RequestBody OrderRequestDTO orderRequest) {
-        OrderDTO orderDTO = orderService.createOrder(orderRequest.getOrder().getItems());
-        return ResponseEntity.ok(orderDTO);
+        try {
+            OrderDTO orderDTO = orderService.createOrder(orderRequest.getOrder().getItems());
+            return ResponseEntity.status(HttpStatus.CREATED).body(orderDTO);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
     }
 }
