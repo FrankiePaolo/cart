@@ -7,6 +7,7 @@ import com.purchase.cart.mapper.OrderItemMapper;
 import com.purchase.cart.mapper.OrderMapper;
 import com.purchase.cart.model.Order;
 import com.purchase.cart.repository.OrderRepository;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,8 +34,23 @@ public class OrderService {
     @Autowired
     private PriceCalculationService priceCalculationService;
 
+    public OrderService(ProductService productService,
+                       OrderRepository orderRepository,
+                       OrderMapper orderMapper,
+                       OrderItemMapper orderItemMapper,
+                       PriceCalculationService priceCalculationService) {
+        this.productService = productService;
+        this.orderRepository = orderRepository;
+        this.orderMapper = orderMapper;
+        this.orderItemMapper = orderItemMapper;
+        this.priceCalculationService = priceCalculationService;
+    }
+
     @Transactional
     public OrderDTO createOrder(List<OrderItemDTO> itemDTOs) {
+        if (itemDTOs == null || itemDTOs.isEmpty()) {
+            throw new IllegalArgumentException("Order items cannot be null or empty");
+        }
         List<OrderItemDTO> items = new ArrayList<>();
         List<BigDecimal> prices = new ArrayList<>();
         List<BigDecimal> vatAmounts = new ArrayList<>();
