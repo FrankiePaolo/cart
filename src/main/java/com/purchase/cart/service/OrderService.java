@@ -18,22 +18,11 @@ import java.util.List;
 @Service
 public class OrderService {
 
-    @Autowired
     private ProductService productService;
-
-    @Autowired
     private OrderRepository orderRepository;
-
-    @Autowired
     private OrderMapper orderMapper;
-
-    @Autowired
     private OrderItemMapper orderItemMapper;
-
-    @Autowired
     private OrderValidationService orderValidationService;
-
-    @Autowired
     private PriceCalculationService priceCalculationService;
 
     public OrderService(ProductService productService,

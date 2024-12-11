@@ -11,16 +11,18 @@ import org.springframework.stereotype.Service;
 @Service
 public class ProductService {
 
-    @Autowired
     private ProductRepository productRepository;
-
-    @Autowired
     private ProductMapper productMapper;
+
+    public ProductService(ProductRepository productRepository, ProductMapper productMapper) {
+        this.productRepository = productRepository;
+        this.productMapper = productMapper;
+    }
 
     @Cacheable("products")
     public ProductDTO getId(int productId) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new IllegalArgumentException("Product not found: " + productId));
+                .orElseThrow(() -> new IllegalArgumentException("Product not found with id: " + productId));
         return productMapper.toDTO(product);
     }
 }
