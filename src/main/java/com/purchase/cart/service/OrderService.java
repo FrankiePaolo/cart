@@ -1,8 +1,11 @@
 package com.purchase.cart.service;
 
+import com.purchase.cart.dto.OrderDTO;
+import com.purchase.cart.dto.OrderItemDTO;
+import com.purchase.cart.dto.ProductDTO;
+import com.purchase.cart.mapper.OrderItemMapper;
+import com.purchase.cart.mapper.OrderMapper;
 import com.purchase.cart.model.Order;
-import com.purchase.cart.model.OrderItem;
-import com.purchase.cart.model.Product;
 import com.purchase.cart.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,7 +13,6 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
@@ -21,36 +23,42 @@ public class OrderService {
     @Autowired
     private OrderRepository orderRepository;
 
-    public Order createOrder(List<OrderItem> items) {
+    @Autowired
+    private OrderMapper orderMapper;
+
+    @Autowired
+    private OrderItemMapper orderItemMapper;
+
+    public OrderDTO createOrder(List<OrderItemDTO> itemDTOs) {
         BigDecimal totalPrice = BigDecimal.ZERO;
         BigDecimal totalVat = BigDecimal.ZERO;
-        List<OrderItem> orderItems = new ArrayList<>();
 
-        // Calculate prices and VAT for each order item
-        for (OrderItem item : items) {
-            // Fetch the product from the database
-            Product product = productService.getProductById(item.getProductId());
+        List<OrderItemDTO> items = new ArrayList<>();
 
-            // Calculate price and VAT for the item
-            BigDecimal price = product.getPrice().multiply(BigDecimal.valueOf(item.getQuantity()));
-            BigDecimal vat = price.multiply(product.getVatRate());
+        for (OrderItemDTO itemDTO : itemDTOs) {
+            ProductDTO productDTO = productService.getId(itemDTO.getProductId());
 
-            OrderItem orderItem = new OrderItem();
-            orderItem.setProductId(item.getProductId());
-            orderItem.setQuantity(item.getQuantity());
-            orderItem.setPrice(price);
-            orderItem.setVat(vat);
-            orderItems.add(orderItem);
+            OrderItemDTO orderItemDTO = new OrderItemDTO();
+            orderItemDTO.setProductId(itemDTO.getProductId());
+            orderItemDTO.setQuantity(itemDTO.getQuantity());
 
+            BigDecimal price = productDTO.getPrice().multiply(BigDecimal.valueOf(itemDTO.getQuantity()));
+            BigDecimal vat = price.multiply(productDTO.getVatRate());
+
+            orderItemDTO.setPrice(price);
+            orderItemDTO.setVat(vat);
+
+            items.add(orderItemDTO);
             totalPrice = totalPrice.add(price);
             totalVat = totalVat.add(vat);
         }
 
-        Order order = new Order();
-        order.setOrderPrice(totalPrice);
-        order.setOrderVat(totalVat);
-        order.setItems(orderItems);
+        OrderDTO orderDTO = new OrderDTO();
+        orderDTO.setOrderPrice(totalPrice);
+        orderDTO.setOrderVat(totalVat);
+        orderDTO.setItems(items);
 
-        return orderRepository.save(order);
+        Order savedOrder = orderRepository.save(orderMapper.toEntity(orderDTO));
+        return orderMapper.toDTO(savedOrder);
     }
 }
