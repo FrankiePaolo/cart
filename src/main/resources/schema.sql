@@ -1,7 +1,6 @@
 -- Table for products
 CREATE TABLE product (
     product_id INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(255) NOT NULL,
     price DECIMAL(10, 2) NOT NULL,
     vat_rate DECIMAL(5, 2) NOT NULL
 );

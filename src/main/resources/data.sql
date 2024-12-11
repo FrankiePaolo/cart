@@ -1,7 +1,7 @@
 -- Insert sample products
-INSERT INTO product (name, price, vat_rate) VALUES ('Product A', 10.00, 0.10);
-INSERT INTO product (name, price, vat_rate) VALUES ('Product B', 20.00, 0.20);
-INSERT INTO product (name, price, vat_rate) VALUES ('Product C', 15.00, 0.15);
+INSERT INTO product (price, vat_rate) VALUES (10.00, 0.10);
+INSERT INTO product (price, vat_rate) VALUES (20.00, 0.20);
+INSERT INTO product (price, vat_rate) VALUES (15.00, 0.15);
 
 -- Insert a sample order
 INSERT INTO orders (order_price, order_vat) VALUES (75.00, 7.50);
