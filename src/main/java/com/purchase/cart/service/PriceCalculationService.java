@@ -8,11 +8,13 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
+import org.springframework.cache.annotation.Cacheable;
 
 @Service
 public class PriceCalculationService {
     private static final int DECIMAL_PLACES = 2;
 
+    @Cacheable(value = "productPrices", key = "#productDTO.productId")
     public BigDecimal calculateItemPrice(OrderItemDTO itemDTO, ProductDTO productDTO) {
         return productDTO.getPrice()
                 .multiply(BigDecimal.valueOf(itemDTO.getQuantity()))
