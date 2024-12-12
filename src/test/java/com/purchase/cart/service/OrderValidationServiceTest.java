@@ -2,6 +2,7 @@ package com.purchase.cart.service;
 
 
 import com.purchase.cart.dto.OrderItemDTO;
+import com.purchase.cart.exception.InvalidOrderException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -35,7 +36,7 @@ class OrderValidationServiceTest {
     void validateOrder_WithNullList_ThrowsException() {
         assertThatThrownBy(() ->
                 validationService.validateOrder(null))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(InvalidOrderException.class)
                 .hasMessage("Order must contain at least one item");
     }
 
@@ -43,7 +44,7 @@ class OrderValidationServiceTest {
     void validateOrder_WithEmptyList_ThrowsException() {
         assertThatThrownBy(() ->
                 validationService.validateOrder(Collections.emptyList()))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(InvalidOrderException.class)
                 .hasMessage("Order must contain at least one item");
     }
 
@@ -54,7 +55,7 @@ class OrderValidationServiceTest {
 
         assertThatThrownBy(() ->
                 validationService.validateOrder(List.of(invalidItem)))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(InvalidOrderException.class)
                 .hasMessage("Quantity must be greater than zero");
     }
 
@@ -84,7 +85,7 @@ class OrderValidationServiceTest {
 
         assertThatThrownBy(() ->
                 validationService.validateOrder(List.of(invalidItem)))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(InvalidOrderException.class)
                 .hasMessage("Product ID must be a positive integer");
     }
 

@@ -6,8 +6,7 @@ import com.purchase.cart.service.OrderService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -20,12 +19,10 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseEntity<OrderDTO> createOrder(@RequestBody OrderRequestDTO orderRequest) {
-        try {
-            OrderDTO orderDTO = orderService.createOrder(orderRequest.getOrder().getItems());
-            return ResponseEntity.status(HttpStatus.CREATED).body(orderDTO);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+    public ResponseEntity<OrderDTO> createOrder(@Valid @RequestBody OrderRequestDTO orderRequest) {
+        OrderDTO orderDTO = orderService.createOrder(orderRequest.getOrder().getItems());
+        return ResponseEntity.status(HttpStatus.CREATED).body(orderDTO);
     }
+
+
 }

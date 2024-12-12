@@ -3,6 +3,7 @@ package com.purchase.cart.service;
 import com.purchase.cart.dto.OrderDTO;
 import com.purchase.cart.dto.OrderItemDTO;
 import com.purchase.cart.dto.ProductDTO;
+import com.purchase.cart.exception.OrderCreationException;
 import com.purchase.cart.mapper.OrderItemMapper;
 import com.purchase.cart.mapper.OrderMapper;
 import com.purchase.cart.model.Order;
@@ -42,30 +43,34 @@ public class OrderService {
     public OrderDTO createOrder(List<OrderItemDTO> itemDTOs) {
         orderValidationService.validateOrder(itemDTOs);
 
-        List<OrderItemDTO> items = new ArrayList<>();
-        List<BigDecimal> prices = new ArrayList<>();
-        List<BigDecimal> vatAmounts = new ArrayList<>();
+        try {
+            List<OrderItemDTO> items = new ArrayList<>();
+            List<BigDecimal> prices = new ArrayList<>();
+            List<BigDecimal> vatAmounts = new ArrayList<>();
 
-        for (OrderItemDTO itemDTO : itemDTOs) {
-            ProductDTO productDTO = productService.getId(itemDTO.getProductId());
-            OrderItemDTO orderItemDTO = makeOrderItem(itemDTO);
+            for (OrderItemDTO itemDTO : itemDTOs) {
+                ProductDTO productDTO = productService.getId(itemDTO.getProductId());
+                OrderItemDTO orderItemDTO = makeOrderItem(itemDTO);
 
-            BigDecimal price = priceCalculationService.calculateItemPrice(itemDTO, productDTO);
-            BigDecimal vat = priceCalculationService.calculateVat(price, productDTO);
+                BigDecimal price = priceCalculationService.calculateItemPrice(itemDTO, productDTO);
+                BigDecimal vat = priceCalculationService.calculateVat(price, productDTO);
 
-            orderItemDTO.setPrice(price);
-            orderItemDTO.setVat(vat);
+                orderItemDTO.setPrice(price);
+                orderItemDTO.setVat(vat);
 
-            items.add(orderItemDTO);
-            prices.add(price);
-            vatAmounts.add(vat);
+                items.add(orderItemDTO);
+                prices.add(price);
+                vatAmounts.add(vat);
+            }
+
+            BigDecimal totalPrice = priceCalculationService.calculateTotalPrice(prices);
+            BigDecimal totalVat = priceCalculationService.calculateTotalPrice(vatAmounts);
+
+            Order savedOrder = makeOrder(totalPrice, totalVat, items);
+            return orderMapper.toDTO(savedOrder);
+        } catch (Exception e) {
+            throw new OrderCreationException("Failed to create order: " + e.getMessage());
         }
-
-        BigDecimal totalPrice = priceCalculationService.calculateTotalPrice(prices);
-        BigDecimal totalVat = priceCalculationService.calculateTotalPrice(vatAmounts);
-
-        Order savedOrder = makeOrder(totalPrice, totalVat, items);
-        return orderMapper.toDTO(savedOrder);
     }
 
     private static OrderItemDTO makeOrderItem(OrderItemDTO itemDTO) {

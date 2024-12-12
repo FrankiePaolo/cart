@@ -3,6 +3,7 @@ package com.purchase.cart.service;
 import com.purchase.cart.dto.OrderDTO;
 import com.purchase.cart.dto.OrderItemDTO;
 import com.purchase.cart.dto.ProductDTO;
+import com.purchase.cart.exception.OrderCreationException;
 import com.purchase.cart.mapper.OrderItemMapper;
 import com.purchase.cart.mapper.OrderMapper;
 import com.purchase.cart.model.Order;
@@ -14,8 +15,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -78,6 +82,18 @@ class OrderServiceTest {
         assertThat(result.getOrderVat()).isEqualByComparingTo("8.00");
         assertThat(result.getItems()).hasSize(2);
         assertThat(result.getItems()).containsExactly(item1, item2);
+    }
+
+    @Test
+    void createOrder_DatabaseError_ThrowsOrderCreationException() {
+        // Arrange
+        OrderItemDTO item = createOrderItemDTO(1, 2);
+        when(orderRepository.save(any())).thenThrow(new RuntimeException("Database connection failed"));
+
+        OrderCreationException exception = assertThrows(OrderCreationException.class, () ->
+                orderService.createOrder(List.of(item))
+        );
+        assertEquals("Failed to create order: Database connection failed", exception.getMessage());
     }
 
     private OrderItemDTO createOrderItemDTO(int productId, int quantity) {

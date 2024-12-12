@@ -1,6 +1,7 @@
 package com.purchase.cart.service;
 
 import com.purchase.cart.dto.OrderItemDTO;
+import com.purchase.cart.exception.InvalidOrderException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,7 +17,7 @@ public class OrderValidationService {
 
     private void validateOrderExists(List<OrderItemDTO> items) {
         if (items == null || items.isEmpty()) {
-            throw new IllegalArgumentException("Order must contain at least one item");
+            throw new InvalidOrderException("Order must contain at least one item");
         }
     }
 
@@ -27,14 +28,14 @@ public class OrderValidationService {
 
     private void validateProductId(OrderItemDTO item) {
         if (item.getProductId() <= 0) {
-            throw new IllegalArgumentException("Product ID must be a positive integer");
+            throw new InvalidOrderException("Product ID must be a positive integer");
         }
     }
 
     private void validateQuantity(OrderItemDTO item) {
         int quantity = item.getQuantity();
         if (quantity < MIN_QUANTITY) {
-            throw new IllegalArgumentException("Quantity must be greater than zero");
+            throw new InvalidOrderException("Quantity must be greater than zero");
         }
     }
 
