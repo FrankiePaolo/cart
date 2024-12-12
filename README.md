@@ -8,21 +8,15 @@ Features
 
 Running the Application:
 
-Start mysql container:
+Build the application image and start MySql in detached mode:
 
-    docker compose up -d mysql
-
-Build the application image:
-
-    docker build -t mytest .
+    docker compose up -d
 
 Run each step:
 
     docker run -v $(pwd):/mnt -p 9090:9090 -w /mnt mytest ./scripts/build.sh
 
-
     docker run -v $(pwd):/mnt -p 9090:9090 -w /mnt mytest ./scripts/test.sh
-
 
 Docker's internal DNS resolves the service name "mysql" to the correct container IP address within the same Docker network. That's why we include the --network flag in our run commands:
 
