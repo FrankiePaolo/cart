@@ -1,6 +1,7 @@
 package com.purchase.cart.service;
 
 import com.purchase.cart.dto.ProductDTO;
+import com.purchase.cart.exception.ProductNotFoundException;
 import com.purchase.cart.mapper.ProductMapper;
 import com.purchase.cart.model.Product;
 import com.purchase.cart.repository.ProductRepository;
@@ -67,7 +68,7 @@ class ProductServiceTest {
 
         // when/then
         assertThatThrownBy(() -> productService.getId(999))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ProductNotFoundException.class)
                 .hasMessage("Product not found with id: 999");
     }
 }
